@@ -2,6 +2,7 @@ package me.glaremasters.click2sell;
 
 import java.util.HashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -17,15 +18,15 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler
     public void onPickaxeInteract(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {
             return;
         }
-        ItemStack pickaxe = new ItemStack(Material.DIAMOND_PICKAXE);
+        ItemStack item = event.getPlayer().getItemInHand();
 
-        if (!(event.getPlayer().getInventory().getItemInHand().equals(pickaxe))) {
+        if (!(item.getType() == Material.DIAMOND_PICKAXE)) {
             return;
         }
-        int cooldownTime = 5;
+        int cooldownTime = 2;
         if (cooldowns.containsKey(event.getPlayer().getName())) {
             long secondsLeft =
                     ((cooldowns.get(event.getPlayer().getName()) / 1000) + cooldownTime) - (
@@ -36,7 +37,8 @@ public class Listener implements org.bukkit.event.Listener {
             }
         }
         cooldowns.put(event.getPlayer().getName(), System.currentTimeMillis());
-        event.getPlayer().sendMessage("Right click again to sell all!");
+        event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
+                Main.getInstance().getConfig().getString("message")));
     }
 
 }
